@@ -921,18 +921,26 @@ function openViewMed(id) {
       ? Math.floor(m.stockQty / Math.max(1, timesPerDay))
       : null;
 
+  // calendar / course dates
+  const startLabel = m.startDate || "Not set";
+  const endLabel = m.endDate || "Not set";
+
   modalBody.innerHTML = `
   <h3>${m.name}</h3>
 
-  <div class="med-meta">${m.dosage || ""} • ${m.type || ""} • ${
-    owner ? owner.name : ""
-  }</div>
+  <div class="med-meta">
+    ${m.dosage || ""} • ${m.type || ""} • ${owner ? owner.name : ""}
+  </div>
 
-  <div style="margin-top:8px">${m.notes || ""}</div>
+  <div style="margin-top:8px">
+    ${m.notes || ""}
+  </div>
 
   <!-- PRESCRIBED BY -->
   <div style="margin-top:10px; font-size:14px; color:var(--muted);">
-    <strong style="color:var(--accent); font-weight:700; margin-right:8px">Prescribed by:</strong>
+    <strong style="color:var(--accent); font-weight:700; margin-right:8px">
+      Prescribed by:
+    </strong>
     ${
       m.prescribedBy && m.prescribedBy.trim()
         ? `<span>${escapeHtml(m.prescribedBy)}</span>`
@@ -940,13 +948,25 @@ function openViewMed(id) {
     }
   </div>
 
+  <!-- SCHEDULE / CALENDAR DATES -->
+  <div style="margin-top:12px">
+    <div style="font-weight:700">Schedule</div>
+    <div class="hint" style="font-weight:700">
+      Start: ${startLabel} <br> ${
+    endLabel !== "Not set" ? `End: ${endLabel}` : "End: Not set"
+  }
+    </div>
+  </div>
+
   <div style="margin-top:12px">
     <div style="font-weight:700">Dosage & Frequency</div>
-    <div class="hint">${m.dosage || ""} • ${
+    <div class="hint" style="font-weight:700">
+      ${m.dosage || ""} • ${
     (m.times || []).length
       ? formatFrequency((m.times || []).length)
       : "No schedule"
-  }</div>
+  }
+    </div>
   </div>
 
   <div style="margin-top:12px">
@@ -963,18 +983,21 @@ function openViewMed(id) {
     <div class="stock-box" style="margin-top:8px">
       <div style="flex:1">
         <div class="stock-qty">Stock: ${m.stockQty ?? 0} doses</div>
-        <div class="stock-days">${
-          (m.times || []).length && m.stockQty
-            ? `~${Math.floor(
-                m.stockQty / Math.max(1, (m.times || []).length)
-              )} day${
-                Math.floor(m.stockQty / Math.max(1, (m.times || []).length)) ===
-                1
-                  ? ""
-                  : "s"
-              } remaining`
-            : "Estimate unavailable"
-        }</div>
+        <div class="stock-days">
+          ${
+            (m.times || []).length && m.stockQty
+              ? `~${Math.floor(
+                  m.stockQty / Math.max(1, (m.times || []).length)
+                )} day${
+                  Math.floor(
+                    m.stockQty / Math.max(1, (m.times || []).length)
+                  ) === 1
+                    ? ""
+                    : "s"
+                } remaining`
+              : "Estimate unavailable"
+          }
+        </div>
       </div>
     </div>
   </div>
@@ -987,6 +1010,7 @@ function openViewMed(id) {
   modal.classList.remove("hidden");
   document.getElementById("close-view").addEventListener("click", closeModal);
 }
+
 
 // ---------- delete / reminders ----------
 function deleteMed(id) {
